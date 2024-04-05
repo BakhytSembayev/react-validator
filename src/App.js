@@ -1,25 +1,55 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import styles from './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const sendFormData = (formData) => {
+    console.log(formData);
+};
+
+export const App = () => {
+    const [login, setLogin] = useState('');
+    const [loginError, setLoginError] = useState(null);
+
+    const onLoginChange = ({ target }) => {
+        setLogin(target.value);
+
+        let newError = null;
+
+        if (!/^[\w_]*$/.test(target.value)) {
+            newError = 'Неверный логин. Допустимые символы: буквы, цифры и нижнее подчёркивание';
+        } else if (target.value.length > 20) {
+            newError = 'Неверный логин. Должно быть не больше 20 символов';
+        }
+
+        setLoginError(newError);
+    };
+
+    const onLoginBlur = ({ target }) => {
+        if (target.value.length < 3) {
+            setLoginError('Неверный логин. Должно быть не меньше 3 символов');
+        }
+    };
+
+    const onSubmit = (event) => {
+        event.preventDefault();
+        sendFormData({ login });
+    };
+
+    return (
+        <div className={styles.app}>
+            <form onSubmit={onSubmit}>
+                {loginError && <div className={styles.errorLabel}>{loginError}</div>}
+                <input
+                    name="login"
+                    type="text"
+                    value={login}
+                    placeholder="Логин"
+                    onChange={onLoginChange}
+                    onBlur={onLoginBlur}
+                />
+                <button type="submit" disabled={!!loginError}>Отправить</button>
+            </form>
+        </div>
+    );
+};
 
 export default App;
